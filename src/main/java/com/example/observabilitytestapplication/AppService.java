@@ -4,6 +4,7 @@ import io.micrometer.common.KeyValues;
 import io.micrometer.observation.*;
 import io.micrometer.observation.annotation.Observed;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -18,20 +19,18 @@ import java.util.Random;
 @Service
 public class AppService {
 
-  private static final String OBSERVATION_NAME = "experian.observation";
-  private static final String CONTEXTUAL_NAME = "experian";
-  private final ObservationRegistry registry = ObservationRegistry.create();
+  public static final String OBSERVATION_NAME = "observation.name";
+  public static final String CONTEXTUAL_NAME = "contextual.name";
   private final Random random = new Random();
+  private ObservationRegistry registry;
 
-  public AppService() {
+  public AppService(ObservationRegistry observationRegistry) {
     ObservationFilter filter = context -> context;
+    this.registry = observationRegistry;
     registry.observationConfig().observationHandler(new ObservationHandler.AllMatchingCompositeObservationHandler());
     registry.observationConfig().observationFilter(filter);
   }
 
-  @Observed(name = "experian",
-      contextualName = "experian.contextual.name",
-      lowCardinalityKeyValues = {"randomNumber", "2"})
   public Mono<ServerResponse> handle(ServerRequest request) {
     int number = random.nextInt(3) + 1;
     System.out.println(LocalDateTime.now() + " - Request");
@@ -59,19 +58,6 @@ public class AppService {
     context.setContextualName(CONTEXTUAL_NAME);
     context.addLowCardinalityKeyValues(context.getAllKeyValues());
     context.addLowCardinalityKeyValues(KeyValues.of("RandomNumber", String.valueOf(number)));
-    System.out.println(context);
     return context;
-  }
-
-  @Bean
-  public ObservationTextPublisher observationTextPublisher() {
-    return new ObservationTextPublisher(
-        log::info,
-        context ->
-            context.getAllKeyValues()
-                .stream()
-                .allMatch(keyValue ->
-                    true),
-        Observation.Context::getName);
   }
 }

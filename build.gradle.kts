@@ -31,6 +31,7 @@ dependencies {
     implementation("io.micrometer:micrometer-core:1.10.6")
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.6")
     implementation("io.micrometer:micrometer-observation:1.10.6")
+    implementation("io.micrometer:micrometer-observation-test:1.10.6")
     implementation(platform("io.micrometer:micrometer-bom:1.10.6"))
     implementation("io.micrometer:micrometer-tracing")
 
