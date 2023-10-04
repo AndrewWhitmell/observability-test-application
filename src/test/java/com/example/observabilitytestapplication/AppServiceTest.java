@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.actuate.observability.AutoCon
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static com.example.observabilitytestapplication.AppService.OBSERVATION_NAME;
@@ -24,7 +25,8 @@ class AppServiceTest {
   @TestConfiguration
   static class ObservationTestConfiguration {
     @Bean
-    TestObservationRegistry observationRegistry() {
+    @Primary
+    TestObservationRegistry testObservationRegistry() {
       return TestObservationRegistry.create();
     }
   }
